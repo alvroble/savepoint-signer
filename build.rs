@@ -1,0 +1,97 @@
+/* RP2350 GameBoy cartridge
+ * Copyright (C) 2025 Sebastian Quilitz
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+use std::fs;
+use std::path::PathBuf;
+use std::process::Command;
+
+fn main() {
+    // Put the crate's OUT_DIR on the linker search path so cortex-m-rt's
+    // link.x (copied there by that crate's build.rs) and defmt.x are
+    // reachable. memory.x stays in the package root; cargo already adds
+    // that directory to the linker search path, and link.x does
+    // `INCLUDE memory.x`. Do not also copy memory.x into OUT_DIR — a
+    // second copy is unnecessary. Do not emit `-C link-arg=-Tlink.x`
+    // from this file: those belong in `.cargo/config.toml` (or in
+    // CARGO_ENCODED_RUSTFLAGS for nested checkouts; see that file).
+    let out = PathBuf::from(std::env::var_os("OUT_DIR").unwrap());
+    println!("cargo:rustc-link-search={}", out.display());
+
+    let work_dir = PathBuf::from(std::env::current_dir().unwrap());
+    let gb_bootloader_dir = work_dir.join("gb-bootloader");
+
+    let mut gbdk_lcc = PathBuf::from(std::env::var_os("GBDK_PATH").unwrap());
+    gbdk_lcc.push("bin/lcc");
+
+    let mut lcc = Command::new(&gbdk_lcc);
+    lcc.args(&[
+        "-Wa-l", "-Wl-m", "-Wl-j", "-Wm-p", "-Wm-yc", "-Wm-yt2", "-Wm-ya1", "-o",
+    ])
+    .arg(out.join("bootloader.gb"));
+    lcc.arg(gb_bootloader_dir.join("bootloader.c"))
+        .arg(gb_bootloader_dir.join("giraffe_4color_data.c"))
+        .arg(gb_bootloader_dir.join("giraffe_4color_map.c"));
+    let lcc_status = lcc.status().expect("failed to execute lcc");
+
+    assert!(lcc_status.success());
+
+    for file in [
+        "bootloader.c",
+        "giraffe_4color_data.c",
+        "giraffe_4color_map.c",
+    ] {
+        println!("cargo:rerun-if-changed=gb-bootloader/{file}");
+    }
+    println!("cargo:rerun-if-changed=build.rs");
+
+    // check if env vars for version are correct
+    u8::from_str_radix(std::env::var("VERSION_MAJOR").unwrap().as_str(), 10)
+        .expect("VERSION_MAJOR is not an u8");
+    u8::from_str_radix(std::env::var("VERSION_MINOR").unwrap().as_str(), 10)
+        .expect("VERSION_MAJOR is not an u8");
+    u8::from_str_radix(std::env::var("VERSION_PATCH").unwrap().as_str(), 10)
+        .expect("VERSION_MAJOR is not an u8");
+    assert!(std::env::var("RELEASE_TYPE").unwrap().len() == 1);
+
+    println!("cargo::rerun-if-env-changed=VERSION_MAJOR");
+    println!("cargo::rerun-if-env-changed=VERSION_MINOR");
+    println!("cargo::rerun-if-env-changed=VERSION_PATCH");
+    println!("cargo::rerun-if-env-changed=RELEASE_TYPE");
+
+    built::write_built_file().expect("Failed to acquire build-time information");
+
+    // Make sure we get rerun when the git commit changes.
+    // We want to watch two files: HEAD, which tracks which branch we are on,
+    // and the file for that branch that tracks which commit is is on.
+    let git_head_file = PathBuf::from(".git/HEAD");
+    if git_head_file.exists() {
+        println!("cargo::rerun-if-changed={}", git_head_file.display());
+
+        let git_head_ref = fs::read_to_string(git_head_file).expect("Unable to read HEAD ref");
+
+        let v: Vec<&str> = git_head_ref.trim().split("ref: ").collect();
+        if v[0] == "" {
+            // this is only true if HEAD begins with "ref:", if false HEAD is detached
+            let git_head_ref = v[1];
+
+            let git_head_ref_file = PathBuf::from(".git").join(git_head_ref);
+            if git_head_ref_file.exists() {
+                println!("cargo::rerun-if-changed={}", git_head_ref_file.display());
+            }
+        }
+    }
+}

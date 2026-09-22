@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/pret/pokecrystal",
+  "commit": "7a7881d0d62e0ddbd82dcf10e7116807487ac651",
+  "rgbds": "1.0.3",
+  "entry": {
+    "map": "NewBarkTown",
+    "x": 8,
+    "y": 8,
+    "trigger": "interact with town sign twice"
+  }
+}

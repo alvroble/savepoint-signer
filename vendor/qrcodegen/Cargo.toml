@@ -1,0 +1,8 @@
+[package]
+name = "qrcodegen"
+version = "1.8.0"
+authors = ["Project Nayuki"]
+description = "High-quality QR Code generator library (vendored, patched for no_std)"
+license = "MIT"
+repository = "https://github.com/nayuki/QR-Code-generator"
+edition = "2018"

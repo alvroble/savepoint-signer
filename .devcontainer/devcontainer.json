@@ -1,0 +1,11 @@
+{
+    "image": "shilga/rp2350-croco-cartridge-devcontainer-rust:v0.3",
+    "name": "Savepoint Signer",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "rust-lang.rust-analyzer"
+            ]
+        }
+    }
+}

@@ -1,0 +1,26 @@
+--- a/maps/NewBarkTown.asm
++++ b/maps/NewBarkTown.asm
+@@ -126,7 +126,14 @@
+ 	end
+ 
+ NewBarkTownSign:
+-	jumptext NewBarkTownSignText
++    checkevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_8
++    iftrue .Seed
++    setevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_8
++    jumptext NewBarkTownSignText
++.Seed:
++    clearevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_8
++    callasm CrystalSeed
++    end
+ 
+ NewBarkTownPlayersHouseSign:
+ 	jumptext NewBarkTownPlayersHouseSignText
+--- a/main.asm
++++ b/main.asm
+@@ -692,3 +692,5 @@
+ ; If it is removed, also remove the "tools/stadium" command in the Makefile.
+ 
+ 	ds $220
++
++INCLUDE "engine/events/crystal_seed.asm"

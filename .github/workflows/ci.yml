@@ -1,0 +1,48 @@
+name: Savepoint Signer checks
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  firmware:
+    runs-on: ubuntu-latest
+    container:
+      image: shilga/rp2350-croco-cartridge-devcontainer-rust:v0.3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build firmware and run host regressions
+        shell: bash
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          bash scripts/build-release.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: savepoint-signer-firmware
+          path: target/thumbv8m.main-none-eabihf/release/rp2350-gameboy-cartridge
+  crystal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned ROM tools and emulator
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bison flex libpng-dev pkg-config
+          git clone --depth 1 --branch v1.0.3 https://github.com/gbdev/rgbds target/rgbds
+          make -C target/rgbds -j2
+          git clone https://github.com/pret/pokecrystal target/pokecrystal-upstream
+          python3 -m venv target/python
+          target/python/bin/pip install -r integrations/pokecrystal/requirements-test.txt
+      - name: Build and test active integration
+        run: |
+          HOST=$(rustc -vV | sed -n 's/^host: //p')
+          cargo build -p signer-probe --example crystal_ui_oracle --release --locked --target "$HOST"
+          target/python/bin/python integrations/pokecrystal/build.py target/pokecrystal-upstream target/rgbds
+          target/python/bin/python integrations/pokecrystal/test_seed.py target/crystal target/crystal-test --oracle "target/$HOST/release/examples/crystal_ui_oracle"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: savepoint-signer-test-screens
+          path: target/crystal-test/*.png

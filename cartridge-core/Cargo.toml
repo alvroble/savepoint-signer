@@ -1,0 +1,23 @@
+[package]
+name = "cartridge-core"
+version = "0.1.0"
+edition = "2021"
+license = "GPLv3"
+description = "Host-testable core logic of the RP2350 Game Boy cartridge firmware."
+
+[dependencies]
+# Use the `log` crate (no-op on host, feature-gated in firmware) so
+# that host tests do not need to link a defmt backend. The firmware
+# picks `defmt-log` for embedded-sdmmc in its own manifest; the workspace
+# patch forces both crates to share this vendored copy, so the
+# unified feature set must stay on a single side.
+embedded-sdmmc = { path = "../vendor/embedded-sdmmc", features = ["log"], default-features = false }
+arrayvec = { version = "0.7.6", default-features = false }
+defmt = { version = "0.3", optional = true }
+
+[features]
+default = []
+defmt-log = ["dep:defmt"]
+
+[lib]
+path = "src/lib.rs"

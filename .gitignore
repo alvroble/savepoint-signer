@@ -1,0 +1,19 @@
+/target/
+/.local-checkpoints/
+/.atl/
+__pycache__/
+*.py[cod]
+.DS_Store
+# Locally built game images, emulator saves and secret-bearing user files.
+*.gb
+*.gbc
+*.sav
+*.SAV
+*.ram
+*.psbt
+*.PSBT
+*.psb
+*.PSB
+!signer-probe/tests/fixtures/*.psb
+*.elf
+*.uf2
