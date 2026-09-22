@@ -1,7 +1,7 @@
 name: Draft Savepoint Signer release
 on:
   push:
-    tags: ['v[0-9]+.[0-9]+.[0-9]+*']
+    tags: ['v*.*.*']
 permissions:
   contents: read
 jobs:
@@ -15,16 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build and package source and firmware
-        shell: bash
+        shell: sh
         env:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           version="${RELEASE_TAG#v}"
           version="${version%%-*}"
-          IFS=. read -r VERSION_MAJOR VERSION_MINOR VERSION_PATCH <<< "$version"
+          IFS=. read -r VERSION_MAJOR VERSION_MINOR VERSION_PATCH <<EOF
+          $version
+          EOF
           export VERSION_MAJOR VERSION_MINOR VERSION_PATCH RELEASE_TYPE=R
-          bash scripts/package-release.sh
+          sh scripts/package-release.sh
       - uses: actions/upload-artifact@v4
         with:
           name: savepoint-signer-release

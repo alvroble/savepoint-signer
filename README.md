@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="images/savepoint-signer-logo.png" alt="Savepoint Signer pixel-art cartridge logo" width="360">
+</p>
+
 # Savepoint Signer
 
 *Your old handheld has one more side quest.*
@@ -53,7 +57,7 @@ libsecp256k1, and picotool. The tested local Rust compiler is
 
 ```sh
 rustup target add thumbv8m.main-none-eabihf
-GBDK_PATH=/path/to/gbdk bash scripts/build-release.sh
+GBDK_PATH=/path/to/gbdk sh scripts/build-release.sh
 picotool load -f -u -v -x -t elf target/thumbv8m.main-none-eabihf/release/rp2350-gameboy-cartridge
 ```
 
@@ -110,7 +114,7 @@ The [publishing checklist](docs/publishing.md) covers signed commits, physical
 smoke tests and the draft release gate.
 
 ```sh
-GBDK_PATH=/path/to/gbdk bash scripts/package-release.sh
+GBDK_PATH=/path/to/gbdk sh scripts/package-release.sh
 ```
 
 The release archive contains the firmware, checksums, documentation, and the
