@@ -66,5 +66,10 @@ fi
 echo
 echo "Host tests (cartridge-core and signer-probe) — host rustflags, not the thumb linker scripts:"
 unset CARGO_ENCODED_RUSTFLAGS
+# Alpine's GCC enables stack protection in secp256k1-sys's C code, but the
+# Rust musl test linker does not provide __stack_chk_fail. This applies only
+# to native test dependencies; the firmware ELF has already been built.
+CFLAGS="${CFLAGS:+$CFLAGS }-fno-stack-protector"
+export CFLAGS
 HOST="$(rustc -vV | sed -n 's/^host: //p')"
 cargo test -p cartridge-core -p signer-probe --locked --target "$HOST" --manifest-path "$ROOT/Cargo.toml"
