@@ -11,6 +11,12 @@ Cartridge V2.1 **RP2350 PCB** and a microSD card, and you have the makings of a
 stealth Bitcoin signer inside a game you can actually play. A fitted plastic
 cartridge shell is planned; today's prototype uses the bare PCB.
 
+For the cartridge hardware, you can [buy an RP2350B Croco Cartridge on
+Tindie](https://www.tindie.com/products/zeraphim/rp2350b-based-gameboy-cartridge/)
+or [build one from the open hardware
+design](https://github.com/shilga/rp-gameboy-cartridge-hw). The Tindie link is
+non-affiliate; Savepoint Signer is not affiliated with the seller.
+
 Savepoint Signer hides its signing interface in a modified Pokémon Crystal.
 Walk through New Bark Town, talk to the sign twice, and the easter egg opens:
 recover a test seed, inspect public keys, review a PSBT, and approve a
