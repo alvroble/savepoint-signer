@@ -52,3 +52,17 @@ white quiet zone and a B Back hint below it.
 Tests and physical verification limits are recorded in
 [testing](../../docs/testing.md). Generated images, game ROMs and saves belong
 under ignored `target/`, not in the source tree.
+
+To regenerate the short New Bark walkthrough, install the pinned PyBoy test
+requirements and FFmpeg, build the `crystal_ui_oracle` example, then run:
+
+```sh
+HOST=$(rustc -vV | sed -n 's/^host: //p')
+cargo build -p signer-probe --example crystal_ui_oracle --release --locked --target "$HOST"
+python3 integrations/pokecrystal/capture_demo.py target/crystal \
+  "target/$HOST/release/examples/crystal_ui_oracle" \
+  target/demo/new-bark-to-signer.mp4
+```
+
+The script uses the same emulator-only start fixture as `test_seed.py` and
+asserts that the signer menu opens.
