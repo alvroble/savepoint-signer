@@ -38,6 +38,10 @@ These are direct 160 × 144 emulator captures from the automated regression.
 They use the public BIP39 test mnemonic, synthetic PSBT data and no real funds.
 The room is still a game; the signer is the easter egg behind the New Bark sign.
 
+[Watch the 18-second New Bark Town walkthrough](docs/media/new-bark-to-signer.mp4):
+walk to the sign, interact twice, and open the signer menu. This is an
+emulator recording using the project's test backend; no seed is entered.
+
 | The sign in New Bark Town | The hidden signer menu | Entering a test seed |
 | :---: | :---: | :---: |
 | ![Character facing the New Bark Town sign](docs/screenshots/new-bark-sign.png) | ![Signer menu with recovery and signing options](docs/screenshots/signer-menu.png) | ![Twelve-word recovery keyboard](docs/screenshots/recovery-keyboard.png) |
