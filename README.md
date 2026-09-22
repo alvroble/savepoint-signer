@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="images/savepoint-signer-logo.png" alt="Savepoint Signer pixel-art cartridge logo" width="360">
+</p>
+
 # Savepoint Signer
 
 *Your old handheld has one more side quest.*
