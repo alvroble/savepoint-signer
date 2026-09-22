@@ -7,7 +7,7 @@ not qualify every transaction, network, SD card or power-loss scenario.
 ## Firmware and backend
 
 ```sh
-GBDK_PATH=/path/to/gbdk bash scripts/build-release.sh
+GBDK_PATH=/path/to/gbdk sh scripts/build-release.sh
 ```
 
 This builds the default `crystal-seed` feature with locked dependencies and
@@ -21,7 +21,7 @@ On the tested macOS setup, use LLVM for the ARM C dependency:
 ```sh
 env 'CC_thumbv8m.main_none_eabihf=/opt/homebrew/opt/llvm/bin/clang' \
     'AR_thumbv8m.main_none_eabihf=/opt/homebrew/opt/llvm/bin/llvm-ar' \
-    GBDK_PATH=/path/to/gbdk bash scripts/build-release.sh
+    GBDK_PATH=/path/to/gbdk sh scripts/build-release.sh
 ```
 
 The default firmware's MBC3 loop must be in RAM, not XIP flash. Inspect the ELF
@@ -61,7 +61,7 @@ still need a physical smoke test after this source cleanup.
 - Test recovery/lock/return and ordinary SAVE/power-cycle/CONTINUE on hardware.
 - Test reviewed PSBT import/sign/export using public synthetic funds/fixtures.
 - Stage and sign the source changes; rebuild from the resulting clean commit.
-- Run `GBDK_PATH=/path/to/gbdk bash scripts/package-release.sh` and inspect
+- Run `GBDK_PATH=/path/to/gbdk sh scripts/package-release.sh` and inspect
   `target/release/savepoint-signer-source-firmware.tar.gz` and `SHA256SUMS`.
 
 The package includes the exact source snapshot, firmware ELF, and per-file
